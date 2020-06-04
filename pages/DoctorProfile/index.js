@@ -5,7 +5,6 @@ import {colors} from '../../utils';
 
 const DoctorProfile = ({navigation, route}) => {
   const dataDoctor = route.params;
-  console.log('doctor-profile :', dataDoctor);
   return (
     <View style={styles.page}>
       <Header title="Doctor Profile" onPress={() => navigation.goBack()} />
@@ -24,7 +23,7 @@ const DoctorProfile = ({navigation, route}) => {
       <View style={styles.action}>
         <Button
           title="Mulai konsultasi"
-          onPress={() => navigation.navigate('Chatting')}
+          onPress={() => navigation.navigate('Chatting', dataDoctor)}
         />
       </View>
     </View>

@@ -27,9 +27,11 @@ const Doctor = ({navigation}) => {
       .ref('category_doctor/')
       .once('value')
       .then(res => {
-        console.log('get category_doctor success!', res.val());
         if (res.val()) {
-          setCategoryDoctor(res.val());
+          const oldData = res.val();
+          const dataFilter = oldData.filter(el => el !== null);
+          setCategoryDoctor(dataFilter);
+          console.log('get category_doctor success!', dataFilter);
         }
       })
       .catch(err => {
@@ -67,9 +69,11 @@ const Doctor = ({navigation}) => {
       .ref('/news/')
       .once('value')
       .then(res => {
-        console.log('get news data form firebase success!', res.val());
         if (res.val()) {
-          setNews(res.val());
+          const oldData = res.val();
+          const dataFilter = oldData.filter(el => el !== null);
+          setNews(dataFilter);
+          console.log('get news data form firebase success!', dataFilter);
         }
       })
       .catch(err => {

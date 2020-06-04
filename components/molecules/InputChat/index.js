@@ -1,16 +1,22 @@
 import React from 'react';
-import {StyleSheet, Text, View, TextInput} from 'react-native';
+import {StyleSheet, View, TextInput} from 'react-native';
 import {colors, fonts} from '../../../utils';
 import {Button} from '../../atoms';
 
-const InputChat = () => {
+const InputChat = ({onChangeText, value, onButtonPress}) => {
   return (
     <View style={styles.container}>
       <TextInput
         style={styles.input}
         placeholder="Tulis pesan untuk Nairobi..."
+        value={value}
+        onChangeText={onChangeText}
       />
-      <Button type="btn-icon-send" />
+      <Button
+        type="btn-icon-send"
+        onPress={onButtonPress}
+        disable={value.length < 1}
+      />
     </View>
   );
 };
@@ -19,6 +25,7 @@ export default InputChat;
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: colors.white,
     padding: 16,
     flexDirection: 'row',
   },

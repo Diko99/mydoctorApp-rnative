@@ -2,22 +2,34 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Header, ChatItem, InputChat} from '../../components';
 import {fonts, colors} from '../../utils';
+import { ScrollView } from 'react-native-gesture-handler';
 
-const Chatting = ({navigation}) => {
+const Chatting = ({navigation, route}) => {
+  const dataDokter = route.params;
   return (
     <View style={styles.page}>
       <Header
         type="dark-profile"
-        title="Nairobi Putri Hayza"
+        title={dataDokter.data.fullName}
+        desc={dataDokter.data.profession}
+        photo={{uri: dataDokter.data.photo}}
         onPress={() => navigation.goBack()}
       />
       <View style={styles.content}>
-        <Text style={styles.chatDate}>Senin, 21 Maret, 2020</Text>
-        <ChatItem isMe />
-        <ChatItem />
-        <ChatItem isMe />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <Text style={styles.chatDate}>Senin, 21 Maret, 2020</Text>
+          <ChatItem isMe />
+          <ChatItem />
+          <ChatItem isMe />
+        </ScrollView>
       </View>
-      <InputChat />
+      <InputChat
+        value={'a'}
+        onChangeText={() => alert('input diklik')}
+        onButtonPress={() => {
+          alert('klik button')
+        }}
+      />
     </View>
   );
 };

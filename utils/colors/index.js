@@ -41,6 +41,7 @@ export const colors = {
       text: mainColors.grey4,
     },
   },
+  disable: mainColors.grey3,
   border: mainColors.grey2,
   cardLight: mainColors.green2,
   loadingBackground: mainColors.black2,

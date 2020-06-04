@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Header, List, DoctorCategory} from '../../components';
-import {DummyDoctor1, DummyDoctor2, DummyDoctor3} from '../../assets';
+import {Header, List} from '../../components';
 import {colors} from '../../utils';
 import {Firebase} from '../../config';
 
@@ -45,6 +44,7 @@ const ChooseDoctor = ({navigation, route}) => {
       {listDoctor.map(doctor => {
         return (
           <List
+            key={doctor.id}
             type="next"
             profile={{uri: doctor.data.photo}}
             name={doctor.data.fullName}
