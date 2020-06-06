@@ -1,11 +1,107 @@
-import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {StyleSheet, Text, View, ScrollView} from 'react-native';
 import {Header, ChatItem, InputChat} from '../../components';
-import {fonts, colors} from '../../utils';
-import { ScrollView } from 'react-native-gesture-handler';
+import {
+  fonts,
+  colors,
+  getData,
+  showError,
+  getChatTime,
+  setDateChat,
+} from '../../utils';
+import {Firebase} from '../../config';
 
 const Chatting = ({navigation, route}) => {
   const dataDokter = route.params;
+  const [chatContent, setChatContent] = useState('');
+  const [user, setUser] = useState({});
+  const [chatData, setChatData] = useState([]);
+
+  useEffect(() => {
+    getDataUserFromLocal();
+    const chatID = `${user.uid}_${dataDokter.data.uid}`;
+    const urlFirebase = `chatting/${chatID}/allChat/`;
+
+    Firebase.database()
+      .ref(urlFirebase)
+      .on('value', snapshot => {
+        if (snapshot.val()) {
+          const dataSnapshot = snapshot.val();
+          const allDataChat = [];
+
+          Object.keys(dataSnapshot).map(key => {
+            const dataChat = dataSnapshot[key];
+            const newDataChat = [];
+
+            Object.keys(dataChat).map(itemChat => {
+              newDataChat.push({
+                id: itemChat,
+                data: dataChat[itemChat],
+              });
+            });
+
+            allDataChat.push({
+              id: key,
+              data: newDataChat,
+            });
+          });
+          setChatData(allDataChat);
+        }
+      });
+  }, [dataDokter.data.uid, user.uid]);
+
+  const getDataUserFromLocal = () => {
+    getData('user').then(res => {
+      setUser(res);
+    });
+  };
+
+  const chatSend = () => {
+    const today = new Date();
+    const data = {
+      sendBy: user.uid,
+      chatDate: new Date().getTime(),
+      chatTime: getChatTime(today),
+      chatContent: chatContent,
+    };
+
+    const chatID = `${user.uid}_${dataDokter.data.uid}`;
+    const urlFirebase = `chatting/${chatID}/allChat/${setDateChat(today)}`;
+    const urlMessageUser = `messages/${user.uid}/${chatID}`;
+    const urlMessageDoctor = `messages/${dataDokter.data.uid}/${chatID}`;
+
+    const dataHistoryChatForUser = {
+      lastContentChat: chatContent,
+      lastChatDate: today.getTime(),
+      uidPartner: dataDokter.data.uid,
+    };
+    const dataHistoryChatForDoctor = {
+      lastContentChat: chatContent,
+      lastChatDate: today.getTime(),
+      uidPartner: user.uid,
+    };
+
+    Firebase.database()
+      .ref(urlFirebase)
+      .push(data)
+      .then(() => {
+        setChatContent('');
+        // set history for user
+        Firebase.database()
+          .ref(urlMessageUser)
+          .set(dataHistoryChatForUser);
+
+        // set history for user
+        Firebase.database()
+          .ref(urlMessageDoctor)
+          .set(dataHistoryChatForDoctor);
+      })
+      .catch(error => {
+        setChatContent('');
+        showError(error.message);
+      });
+  };
+
   return (
     <View style={styles.page}>
       <Header
@@ -17,18 +113,31 @@ const Chatting = ({navigation, route}) => {
       />
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Text style={styles.chatDate}>Senin, 21 Maret, 2020</Text>
-          <ChatItem isMe />
-          <ChatItem />
-          <ChatItem isMe />
+          {chatData.map(chat => {
+            return (
+              <View key={chat.id}>
+                <Text style={styles.chatDate}>{chat.id}</Text>
+                {chat.data.map(itemChat => {
+                  const isMe = itemChat.data.sendBy === user.uid;
+                  return (
+                    <ChatItem
+                      key={itemChat.id}
+                      isMe={isMe}
+                      text={itemChat.data.chatContent}
+                      date={itemChat.data.chatTime}
+                      photo={isMe ? null : {uri: dataDokter.data.photo}}
+                    />
+                  );
+                })}
+              </View>
+            );
+          })}
         </ScrollView>
       </View>
       <InputChat
-        value={'a'}
-        onChangeText={() => alert('input diklik')}
-        onButtonPress={() => {
-          alert('klik button')
-        }}
+        value={chatContent}
+        onChangeText={value => setChatContent(value)}
+        onButtonPress={() => chatSend()}
       />
     </View>
   );

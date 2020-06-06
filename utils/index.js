@@ -3,3 +3,4 @@ export * from './fonts';
 export * from './useForm';
 export * from './localStorage';
 export * from './showMessages';
+export * from './date';
