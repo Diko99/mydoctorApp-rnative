@@ -8,7 +8,6 @@ import {
   Gap,
 } from '../../components';
 import {fonts, colors, showError} from '../../utils';
-import {DummyDoctor3} from '../../assets';
 import {Firebase} from '../../config';
 
 const Doctor = ({navigation}) => {
